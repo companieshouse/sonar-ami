@@ -1,5 +1,6 @@
 variable "ami_name_prefix" {
   type        = string
+  default     = "sonarqube"
   description = "The prefix string that will be used for the name tags of the resulting AMI and snapshot(s); the version string will be appended automatically"
 }
 
@@ -10,7 +11,7 @@ variable "ansible_host_alias" {
 
 variable "aws_instance_type" {
   type        = string
-  default     = "t2.small"
+  default     = "t3.small"
   description = "The EC2 instance type used when building the AMI"
 }
 
@@ -22,13 +23,13 @@ variable "aws_region" {
 
 variable "aws_source_ami_filter_name" {
   type        = string
-  default     = "CentOS 8* x86_64*"
+  default     = "amzn2-base-*"
   description = "The source AMI filter string. Any filter described by the DescribeImages API documentation is valid. If multiple images match then the latest will be used"
 }
 
 variable "aws_source_ami_owner_id" {
   type        = string
-  default     = "125523088429"
+  default     = ""
   description = "The source AMI owner ID; used in combination with aws_source_ami_filter_name to filter for matching source AMIs"
 }
 
@@ -51,7 +52,7 @@ variable "root_volume_size_gb" {
 
 variable "ssh_username" {
   type        = string
-  default     = "centos"
+  default     = "ec2-user"
   description = "The username Packer will use when connecting with SSH"
 }
 
