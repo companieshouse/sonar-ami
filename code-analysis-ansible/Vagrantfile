@@ -1,0 +1,56 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+
+require 'yaml'
+
+vagrantConfig = YAML.load_file 'config.yml'
+
+Vagrant.require_version ">= 1.7.0"
+
+unless Vagrant.has_plugin?("vagrant-hostmanager")
+  raise 'vagrant-hostmanager is not installed!'
+end
+
+unless Vagrant.has_plugin?("vagrant-vbguest")
+  raise 'vagrant-vbguest is not installed!'
+end
+
+Vagrant.configure(2) do |config|
+
+  config.hostmanager.enabled = true
+  config.hostmanager.include_offline = true
+  config.hostmanager.manage_host = true
+
+  config.ssh.insert_key = false
+  config.ssh.private_key_path = ["~/.vagrant.d/insecure_private_key", "~/.ssh/vagrant"]
+  config.vm.provision "file", source: "~/.ssh/vagrant.pub", destination: "~/.ssh/authorized_keys"
+  
+  config.proxy.http = "#{vagrantConfig['guest']['proxy']}"
+  config.proxy.https = "#{vagrantConfig['guest']['proxy']}"
+  config.proxy.no_proxy = "localhost,127.0.0.1"
+  config.vm.box = "centos/7"
+  config.vm.hostname = "#{vagrantConfig['guest']['hostname']}"
+  config.vm.network "private_network", ip: vagrantConfig['guest']['ip']
+  config.vm.network "forwarded_port", guest: 3306, host: 3306
+  config.vm.provider :virtualbox do |vb|
+    vb.name = "#{vagrantConfig['guest']['hostname']}"
+    vb.memory = "#{vagrantConfig['guest']['ram']}"
+    vb.cpus = "#{vagrantConfig['guest']['cpus']}"
+  end
+
+  Vagrant.configure("2") do |config|
+    config.vm.provision "shell",
+      inline: "ansible-galaxy install -f --roles-path $DIR/galaxy_roles -r $DIR/requirements.yml || exit 1"
+  end
+
+  # Disable the new default behavior introduced in Vagrant 1.7, to
+  # ensure that all Vagrant machines will use the same SSH key pair.
+  # See https://github.com/mitchellh/vagrant/issues/5005
+  config.ssh.insert_key = false
+
+end

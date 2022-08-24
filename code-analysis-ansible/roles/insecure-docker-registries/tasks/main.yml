@@ -1,0 +1,14 @@
+---
+
+- name: Configure CH Docker Registry
+  template:
+    src: "daemon.json.j2"
+    dest: "/etc/docker/daemon.json"
+    mode: 0600
+  notify:
+    - bounce docker
+  tags:
+    - docker-repositories
+
+- name: Ensure Docker configuration is active
+  meta: flush_handlers

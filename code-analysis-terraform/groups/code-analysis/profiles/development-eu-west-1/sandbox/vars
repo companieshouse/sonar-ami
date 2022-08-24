@@ -1,0 +1,26 @@
+# Database
+db_password = "code_analysis"
+db_name = "code_analysis"
+db_username = "code_analysis"
+db_instance_class = "db.t3.small"
+db_version = "13.4"
+
+# DNS
+dns_zone = "aws.chdev.org"
+dns_zone_id = "Z2KSI4Z5ZN9NT0"
+
+# Networking
+azure_desktop_vm_cidr= ["10.80.10.0/24"]
+
+# Region
+aws_region = "eu-west-1"
+
+# SSH
+ssh_keyname = "development-sandbox"
+
+# Tags
+tag_environment = "sandbox"
+tag_service = "code-analysis"
+backup_frequency = "never"
+
+private_key_path= "~/.ssh/development-sandbox.pem"

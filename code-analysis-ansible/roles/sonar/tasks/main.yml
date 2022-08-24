@@ -1,0 +1,24 @@
+---
+
+- name: Set hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+
+- import_tasks: configure-kernel.yml
+  tags:
+    - configure-kernel
+
+- name: Install Postgres
+  include_role:
+    name: postgres
+  when:
+    - install_postgresql is defined
+    - install_postgresql == true
+
+- import_tasks: install-sonar.yml
+  tags:
+    - install-sonar
+
+- import_tasks: configure-sonar.yml
+  tags:
+    - configure-sonar

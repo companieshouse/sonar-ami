@@ -1,0 +1,31 @@
+# Database
+sonar.jdbc.username={{ sonar_database.username }}
+sonar.jdbc.password={{ sonar_database.password }}
+sonar.jdbc.url=jdbc:{{ sonar_database.type }}://{{ sonar_database.host }}:{{ sonar_database.port }}/{{ sonar_database.name }}
+
+# Compute Engine Settings
+sonar.ce.javaOpts=-Xmx{{ compute_engine.max_memory }} -Xms{{ compute_engine.initial_memory }} -XX:+HeapDumpOnOutOfMemoryError
+
+# Elastic Search Settings
+sonar.search.javaOpts=-Xmx{{ elastic_search.max_memory }} -Xms{{ elastic_search.initial_memory }} -XX:+HeapDumpOnOutOfMemoryError
+
+# LDAP Server
+sonar.security.realm=LDAP
+ldap.url=ldap://{{ sonar_ldap.host }}:{{ sonar_ldap.port }}
+
+# LDAP User Configuration
+ldap.bindDn={{ sonar_ldap.bind_dn }}
+ldap.bindPassword={{ sonar_ldap.bind_password }}
+ldap.user.baseDn={{ sonar_ldap.base_dn }}
+ldap.user.request={{ sonar_ldap.search_filter }}
+ldap.user.realNameAttribute={{ sonar_ldap.name_attribute }}
+ldap.user.emailAttribute={{ sonar_ldap.email_attribute }}
+
+# Web Settings
+sonar.web.javaOpts=-server -Xmx{{ web.max_memory }} -Xms{{ web.initial_memory }} -XX:+HeapDumpOnOutOfMemoryError
+
+{% if proxy_env.http_proxy is defined %}
+# Proxy settings
+http.proxyHost={{ http_proxy_host }}
+http.proxyPort={{ http_proxy_port }}
+{% endif %}

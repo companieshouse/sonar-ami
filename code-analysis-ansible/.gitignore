@@ -1,0 +1,12 @@
+# Ansible files
+site.retry
+
+# Mac files
+.DS_Store
+._*
+
+# Galaxy roles
+galaxy_roles/
+
+# Vagrant
+.vagrant/

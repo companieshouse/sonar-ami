@@ -1,0 +1,36 @@
+---
+
+# Sonar
+sonar_install_directory: /opt/sonar
+
+sonar_home: "{{ sonar_install_directory}}/sonarqube-{{ sonar_version }}"
+
+sonar_configuration:
+  file_path: "{{ sonar_home }}/conf/sonar.properties"
+
+sonar_start_script_path: "{{ sonar_home }}/bin/linux-x86-64/sonar.sh"
+
+sonar_service_path: /etc/systemd/system/sonar.service
+
+sonar_version: 8.9.2.46101
+
+sonar_group: sonar
+
+sonar_user: sonar
+
+sonar_plugins:
+  directory: "{{ sonar_home }}/extensions/plugins"
+  list:
+    - sonar-shellcheck-plugin-2.3.0.jar
+    - sonar-dependency-check-plugin-2.0.6.jar
+    - sonar-ansible-plugin-2.3.0.jar
+    - sonar-yaml-plugin-1.5.1.jar
+
+sonar_zip_filename: "sonarqube-enterprise-{{ sonar_version }}.zip"
+
+# S3
+bucket_name: resources.ch.gov.uk
+
+bucket_path: /packages/sonar
+
+bucket_plugins_path: "{{ bucket_path }}/plugins"

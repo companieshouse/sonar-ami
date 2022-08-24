@@ -1,0 +1,6 @@
+guest:
+  cpus:     2
+  hostname: "code-analysis.vagrant"
+  ip:       192.168.10.10
+  proxy:    "http://websenseproxy.internal.ch:8080"
+  ram:      1024

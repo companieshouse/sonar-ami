@@ -1,0 +1,14 @@
+---
+
+- hosts: analysis-boxes
+  become: yes
+  environment: "{{ proxy_env }}"
+  roles:
+    - { role: disable-selinux, tags: [ 'disable-selinux' ] }
+    - { role: proxy, tags: [ 'proxy' ] }
+    - { role: chbasics, tags: [ 'chbasics' ] }
+    - { role: repo-epel, tags: [ 'repo-epel' ] }
+    - { role: ntp, tags: [ 'ntp' ] }
+    - { role: java, java_version: 11, tags: [ 'java' ] }
+    - { role: pip, tags: [ 'pip' ] }
+    - { role: sonar, tags: [ 'sonar' ] }

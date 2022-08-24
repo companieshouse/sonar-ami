@@ -1,0 +1,74 @@
+---
+
+- name: Check if version is already installed
+  stat:
+    path: "{{ sonar_home }}"
+  register: version_installed
+
+-  name: Report version already installed
+   debug:
+      msg: "Version {{ sonar_version }} already installed.  Skipping remaining install tasks."
+   when: version_installed.stat.exists
+
+- name: Main Sonar install tasks
+  block:
+
+    - name: Install unzip
+      yum:
+        name: unzip
+        state: installed
+
+    - name: Create Sonar group
+      group:
+        name: sonar
+        state: present
+
+    - name: "Create Sonar system user"
+      user:
+        name: "{{ sonar_user }}"
+        group: "{{ sonar_group }}"
+        createhome: yes
+        shell: "/bin/sh"
+        comment: "Sonar system user"
+        state: present
+        system: yes
+
+    - name: Copy Sonar zip {{ sonar_zip_filename }} to {{ download_folder }}/{{ sonar_zip_filename }}
+      aws_s3:
+        bucket: "{{ bucket_name }}"
+        object: "{{ bucket_path }}/{{ sonar_zip_filename }}"
+        dest: "{{ download_folder }}/{{ sonar_zip_filename }}"
+        mode: get
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        security_token: "{{ aws_security_token }}"
+
+    - name: Check if the Sonar zip is present
+      stat:
+        path: "{{ download_folder }}/{{ sonar_zip_filename }}"
+      register: zip_result
+
+    - name: Create Sonar home directory
+      file:
+        path: "{{ sonar_install_directory }}"
+        state: directory
+        owner: "{{ sonar_user }}"
+        group: "{{ sonar_group }}"
+      when: zip_result.stat.exists
+
+    - name: Install Sonar
+      unarchive:
+        src: "{{ download_folder }}/{{ sonar_zip_filename }}"
+        dest: "{{ sonar_install_directory }}"
+        remote_src: yes
+        owner: "{{ sonar_user }}"
+        group: "{{ sonar_group }}"
+      when: zip_result.stat.exists
+
+    - name: Remove Sonar zip {{ download_folder }}/{{ sonar_zip_filename }}
+      file:
+        state: absent
+        path: "{{ download_folder }}/{{ sonar_zip_filename }}"
+      when: zip_result.stat.exists
+
+  when: not version_installed.stat.exists

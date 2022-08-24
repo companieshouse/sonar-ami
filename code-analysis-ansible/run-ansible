@@ -1,0 +1,24 @@
+#!/bin/bash
+
+DIRECTORY=$(cd "$(dirname "$0")" && pwd)
+
+source $DIRECTORY/common
+
+check_ansible_version
+validate_profile
+check_proceed
+
+export ANSIBLE_HOST_KEY_CHECKING=False
+export ANSIBLE_VAULT_PASSWORD_FILE=~/.vault/code-analysis-ansible
+
+ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS aws_access_key=$(aws configure get aws_access_key_id)"
+ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS aws_secret_key=$(aws configure get aws_secret_access_key)"
+ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS aws_security_token=$(aws configure get aws_security_token)"
+
+# Install or update galaxy_roles
+ansible-galaxy install -f -r $DIRECTORY/requirements.yml || exit 1
+
+# Run playbook
+ansible-playbook "$@" \
+    --vault-password-file "$ANSIBLE_VAULT_PASSWORD_FILE" \
+    --extra-vars "$ANSIBLE_EXTRA_VARS"

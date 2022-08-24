@@ -1,0 +1,29 @@
+---
+
+# Compute Engine
+compute_engine:
+  initial_memory: 128m
+  max_memory: 1g
+
+# Elastic Search
+elastic_search:
+  initial_memory: 1g
+  max_memory: 1g
+
+# Login
+ansible_ssh_private_key_file: "{{ key_path }}/development-sandbox.pem"
+ansible_ssh_user: centos
+
+# Sonar
+sonar_database:
+  host: db.code-analysis.sandbox.aws.chdev.org
+  name: code_analysis
+  password: "{{ vault_sonar_database.password }}"
+  port: 5432
+  type: postgresql
+  username: code_analysis
+
+# Web
+web:
+  initial_memory: 128m
+  max_memory: 1g

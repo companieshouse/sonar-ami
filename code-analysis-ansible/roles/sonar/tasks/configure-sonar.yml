@@ -1,0 +1,54 @@
+---
+
+- name: Stop Sonar service
+  service:
+    name: sonar
+    state: stopped
+
+- name: Check status of plugins
+  stat:
+    path: "{{ sonar_plugins.directory }}/{{ item }}"
+  register: sonar_plugin_status
+  with_items: "{{ sonar_plugins.list }}"
+
+- name: Install plugins
+  aws_s3:
+    bucket: "{{ bucket_name }}"
+    object: "{{ bucket_plugins_path }}/{{ item.item }}"
+    dest: "{{ sonar_plugins.directory }}/{{ item.item }}"
+    mode: get
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    security_token: "{{ aws_security_token }}"
+  when: not item.stat.exists
+  with_items: "{{ sonar_plugin_status.results }}"
+
+- name: Set plugin file permissions
+  file:
+    path: "{{ sonar_plugins.directory }}/{{ item.item }}"
+    owner: "{{ sonar_user }}"
+    group: "{{ sonar_user }}"
+    mode: 0644
+  with_items: "{{ sonar_plugin_status.results }}"
+
+- name: Configure Sonar properties
+  template:
+    src: "sonar.properties.j2"
+    dest: "{{ sonar_configuration.file_path }}"
+    mode: 0644
+
+- name: Configure Sonar start script
+  template:
+    src: "sonar.sh.j2"
+    dest: "{{ sonar_start_script_path }}"
+    mode: 0755
+
+- name: Configure Sonar service
+  template:
+    src: "sonar.service.j2"
+    dest: "{{ sonar_service_path }}"
+    mode: 0644
+  notify:
+    - Restart server
+    - Wait for server to restart
+    - Start sonar

@@ -1,0 +1,19 @@
+---
+- name: Start sonar
+  service:
+    name: sonar
+    state: started
+
+- name: Restart server
+  shell: sleep 2 && /sbin/shutdown -r now "Ansible configuration update"
+  async: 1
+  poll: 0
+
+- name: Wait for server to restart
+  local_action:
+    module: wait_for
+      host={{ inventory_hostname }}
+      port=22
+      delay=20
+      timeout=300
+  become: false

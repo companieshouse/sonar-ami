@@ -1,0 +1,38 @@
+#!/bin/bash
+
+DIRECTORY=$(cd "$(dirname "$0")" && pwd)
+
+source $DIRECTORY/common
+
+check_ansible_version
+validate_profile
+check_proceed
+
+ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS aws_access_key=$(aws configure get aws_access_key_id)"
+ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS aws_secret_key=$(aws configure get aws_secret_access_key)"
+ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS aws_security_token=$(aws configure get aws_security_token)"
+ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS key_path=/keys"
+
+DOCKER_ENV_VARS="$DOCKER_ENV_VARS --env AWS_PROFILE=$AWS_PROFILE"
+DOCKER_ENV_VARS="$DOCKER_ENV_VARS --env http_proxy=http://websenseproxy.internal.ch:8080"
+DOCKER_ENV_VARS="$DOCKER_ENV_VARS --env https_proxy=http://websenseproxy.internal.ch:8080"
+DOCKER_ENV_VARS="$DOCKER_ENV_VARS --env ANSIBLE_HOST_KEY_CHECKING=False"
+
+DOCKER_VOLUMES="$DOCKER_VOLUMES -v $HOME/.vault:/vault"
+
+DOCKER_IMAGE_NAME=169942020521.dkr.ecr.eu-west-1.amazonaws.com/ansible-runner
+DOCKER_IMAGE_VERSION=2.7.9
+
+# Install or update galaxy_roles
+ansible-galaxy install -f -r $DIRECTORY/requirements.yml || exit 1
+
+# Run playbook
+docker run -it --rm \
+    -v $DIRECTORY:/playbook \
+    -v ~/.ssh/:/keys \
+    $DOCKER_ENV_VARS \
+    $DOCKER_VOLUMES \
+    $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION \
+    --extra-vars "$ANSIBLE_EXTRA_VARS" \
+    --vault-password-file /vault/code-analysis-ansible \
+    "$@"

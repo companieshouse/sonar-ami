@@ -1,0 +1,56 @@
+---
+
+# Downloads
+download_folder: /root
+
+# Java
+install_jdk: true
+
+# Systemctl Parameters
+systemctl_params:
+   max_map_count: 524288
+   file_max: 131072
+
+# User Limits
+user_limits:
+  files: 131072
+  processes: 8192
+
+# Sonar
+sonar_ldap:
+  base_dn: "ou=CARDIFF,ou=CH,dc=CompaniesHouse,dc=local"
+  bind_dn: "CN=adchipsweblogicldap,OU=AD Groups,OU=CARDIFF,OU=CH,DC=CompaniesHouse,DC=local"
+  bind_password: "{{ vault_sonar_ldap.bind_password }}"
+  email_attribute: mail
+  host: ldap3.internal.ch
+  name_attribute: cn
+  port: 389
+  search_filter: "sAMAccountName={0}"
+
+# SSH
+key_path: ~/.ssh
+
+# Pip dependencies
+pip_install_packages:
+  - name: boto3
+    version: "1.4.7"
+  - name: botocore
+    version: "1.7.36"
+  - name: docker-py
+    version: "1.10.6"
+
+# Docker
+docker_image_path: infrastructure
+
+docker_registry:
+  host: "{{ vault_docker_registry.host }}"
+  port: "{{ vault_docker_registry.port }}"
+
+insecure_docker_registries:
+  - '"{{ docker_registry.host }}:{{ docker_registry.port }}"'
+
+docker_users:
+  - sonar
+
+# Postgresql
+postgresql_version: 13.3

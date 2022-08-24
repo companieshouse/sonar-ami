@@ -1,0 +1,28 @@
+---
+
+# Set systemctl values in /etc/sysctl.conf
+- name: Set systemctl values
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+  with_items:
+    - name: vm.max_map_count
+      value: "{{ systemctl_params.max_map_count }}"
+    - name: fs.file-max
+      value: "{{ systemctl_params.file_max }}"
+
+# Set sonar user limits in /etc/security/limits.conf
+- name: Set user limits
+  pam_limits:
+    domain: sonar
+    limit_type: '-'
+    limit_item: "{{ item.name }}"
+    value: "{{ item.value }}"
+    use_max: yes
+  with_items:
+    - name: nproc
+      value: "{{ user_limits.processes }}"
+    - name: nofile
+      value: "{{ user_limits.files }}"

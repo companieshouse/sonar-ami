@@ -1,0 +1,32 @@
+---
+- src: https://github.com/companieshouse/ansible-role-disable-selinux
+  name: disable-selinux
+  version: "1.0.0"
+
+- src: https://github.com/geerlingguy/ansible-role-ntp
+  name: ntp
+  version: "1.3.0"
+
+- src: https://github.com/geerlingguy/ansible-role-repo-epel
+  name: repo-epel
+  version: "1.2.3"
+
+- src: https://github.com/companieshouse/ansible-role-java
+  name: java
+  version: "1.1.0"
+
+- src: https://github.com/companieshouse/ansible-role-chbasics
+  name: chbasics
+  version: "1.0.0"
+
+- src: https://github.com/companieshouse/ansible-role-proxy
+  name: proxy
+  version: "1.0.0"
+
+- src: https://github.com/geerlingguy/ansible-role-pip
+  name: pip
+  version: "1.2.1"
+
+- src: https://github.com/geerlingguy/ansible-role-docker
+  name: docker
+  version: "2.4.0"

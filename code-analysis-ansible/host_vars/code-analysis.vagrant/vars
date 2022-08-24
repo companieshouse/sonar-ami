@@ -1,0 +1,42 @@
+---
+
+# Compute Engine
+compute_engine:
+  initial_memory: 128m
+  max_memory: 200m
+
+# Elastic Search
+elastic_search:
+  initial_memory: 200m
+  max_memory: 200m
+
+# Login
+ansible_ssh_private_key_file: "{{ key_path }}/vagrant"
+ansible_ssh_user: vagrant
+
+# Postgresql
+install_postgresql: true
+
+# Proxy
+http_proxy_host: websenseproxy.internal.ch
+http_proxy_port: 8080
+http_proxy: "http://{{ http_proxy_host }}:{{ http_proxy_port }}"
+proxy_env:
+  http_proxy: "{{ http_proxy }}"
+  https_proxy: "{{ http_proxy }}"
+  ftp_proxy: "{{ http_proxy }}"
+  no_proxy: "localhost*,127.0.0.1"
+
+# Sonar
+sonar_database:
+  host: localhost
+  name: sonarqube
+  password: "{{ vault_sonar_database.password }}"
+  port: 5432
+  type: postgresql
+  username: sonar
+
+# Web
+web:
+  initial_memory: 128m
+  max_memory: 200m
