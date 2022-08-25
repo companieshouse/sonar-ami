@@ -25,7 +25,7 @@ source "amazon-ebs" "builder" {
       name =  "${var.aws_source_ami_filter_name}"
       root-device-type = "ebs"
     }
-    owners = ["${var.aws_source_ami_owner_id}"]
+    owners = ["${local.aws_source_ami_owner_id}"]
     most_recent = true
   }
 

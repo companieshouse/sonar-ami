@@ -1,0 +1,10 @@
+---
+
+- name: Create temporary directory...
+  tempfile:
+    state: directory
+  register: temp_dir
+
+- name: Created
+  ansible.builtin.debug:
+    msg: "{{ temp_dir.path }}"

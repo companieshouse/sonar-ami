@@ -1,1 +1,7 @@
 ---
+
+- hosts: sonar
+  become: true
+  roles:
+    - sonar
+    - logrotate
