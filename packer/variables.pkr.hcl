@@ -9,11 +9,6 @@ variable "ami_name_prefix" {
   description = "The prefix string that will be used for the name tags of the resulting AMI and snapshot(s); the version string will be appended automatically"
 }
 
-variable "ansible_host_alias" {
-  type        = string
-  description = "The Ansible host alias"
-}
-
 variable "aws_instance_type" {
   type        = string
   default     = "t3.small"
