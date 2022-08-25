@@ -1,4 +1,3 @@
-local "aws_source_ami_owner_id" {
-    expression = vault("/aws-accounts/account-ids", "development")
-    sensitive   = true
+locals  {
+    aws_source_ami_owner_id = vault("/aws-accounts/account-ids", "development")
 }
