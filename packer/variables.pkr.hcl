@@ -1,3 +1,8 @@
+variable "ami_account_ids" {
+  type        = list(string)
+  description = "A list of account IDs that have access to launch the resulting AMI(s)"
+}
+
 variable "ami_name_prefix" {
   type        = string
   default     = "sonarqube"
@@ -27,12 +32,6 @@ variable "aws_source_ami_filter_name" {
   description = "The source AMI filter string. Any filter described by the DescribeImages API documentation is valid. If multiple images match then the latest will be used"
 }
 
-variable "aws_source_ami_owner_id" {
-  type        = string
-  default     = ""
-  description = "The source AMI owner ID; used in combination with aws_source_ami_filter_name to filter for matching source AMIs"
-}
-
 variable "aws_subnet_filter_name" {
   type        = string
   description = "The subnet filter string. Any filter described by the DescribeSubnets API documentation is valid. If multiple subnets match then the one with the most IPv4 addresses free will be used"
@@ -52,7 +51,7 @@ variable "root_volume_size_gb" {
 
 variable "ssh_username" {
   type        = string
-  default     = "ec2-user"
+  default     = "centos"
   description = "The username Packer will use when connecting with SSH"
 }
 
