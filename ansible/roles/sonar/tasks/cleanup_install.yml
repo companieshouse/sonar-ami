@@ -1,0 +1,16 @@
+---
+
+# Remove packages we used during the install
+- name: Remove redundant packages
+  package:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ install_packages }}"
+
+# Remove temporary folder
+- name: Remove the temporary folder
+  ansible.builtin.file:
+    path: "{{ tempfile.path }}"
+    state: absent
+  when: tempfile.path is defined
