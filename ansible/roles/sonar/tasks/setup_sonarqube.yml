@@ -1,0 +1,67 @@
+---
+
+# Create temporary directory for build artifacts
+- name: Create temporary build directory
+  tempfile:
+    state: directory
+  register: tempfile
+
+# Download and extract SonarQube binaries
+- name: Download SonarQube binaries
+  get_url:
+    url: "{{ sonar_download_url }}"
+    dest: "{{ tempfile.path }}/{{ sonar_archive }}"
+  retries: 5
+  delay: 10
+
+- name: Expand SonarQube binaries
+  unarchive:
+    src: "{{ tempfile.path }}/{{ sonar_archive }}"
+    dest: "{{ sonar_install_directory }}"
+    owner: "{{ sonar_user }}"
+    group: "{{ sonar_group }}"
+    copy: no
+
+# Check and install SystemD SonarQube service
+- name: Check systemd is service manager
+  fail:
+    msg: "This Ansible script expects the systemd service manager"
+  when: "ansible_service_mgr != 'systemd'"
+
+- name: Copy SonarQube systemd unit file into place
+  template:
+    src: sonar.service.j2
+    dest: /etc/systemd/system/sonar.service
+    owner: root
+    group: root
+    mode: 0755
+  register: systemd_service
+  when: "ansible_service_mgr == 'systemd'"
+
+- name: Force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+  when: systemd_service is defined and systemd_service.changed
+
+- name: Ensure SonarQube is running and set to start on boot
+  service:
+    name: sonar
+    state: started
+    enabled: yes
+
+# Enforce permissions on the SoanrQube directory
+- name: Ensure SonarQube files permissions
+  file:
+    path: "{{ sonar_install_directory }}"
+    state: directory
+    recurse: yes
+    owner: "{{ sonar_user }}"
+    group: "{{ sonar_group }}"
+    mode: "o-w"
+
+# Add SonarQube web port to firewalld
+- name: Add SonarQube web port to firewalld
+  firewalld:
+      port: "{{sonar_web_port}}/tcp"
+      permanent: yes
+      state: enabled
