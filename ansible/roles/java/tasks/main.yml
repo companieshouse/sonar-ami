@@ -1,4 +1,8 @@
 ---
+# Enable the openjdk install via yum
+- name: Enable the JAVA amazon-linux-extras package
+  shell: "amazon-linux-extras enable java-openjdk11"
+  when: ansible_distribution == "Amazon"
 
 # Install Java using package manager
 - name: Install JAVA packages
