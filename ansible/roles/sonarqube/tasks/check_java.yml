@@ -11,3 +11,4 @@
   fail:
     msg: "JAVA is not installed or configured correctly"
   when: not prereq_java.rc == 0
+  

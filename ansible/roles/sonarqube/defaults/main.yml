@@ -34,4 +34,3 @@ sonar_user: sonar
 
 # TCP port for incoming HTTP connections. Default value is 9000.
 sonar_web_port: 9000
-
