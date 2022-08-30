@@ -1,8 +1,9 @@
 ---
 
-- hosts: sonar
+- hosts: sonarqube
   become: true
   roles:
     - java
-    - sonar
+    - sonarqube
     - logrotate
+  
