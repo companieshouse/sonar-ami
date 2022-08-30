@@ -1,0 +1,51 @@
+---
+
+# Install required packages
+- name: Install required packages for install
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ install_packages }}"
+
+# Config SonarQube user
+- name: Create SonarQube system group
+  group:
+    name: "{{ sonar_group }}"
+    state: present
+
+- name: Create SonarQube system user
+  user:
+    name: "{{ sonar_user }}"
+    group: "{{ sonar_group }}"
+    shell: "/sbin/nologin"
+    comment: "SonarQube System user"
+    createhome: no
+    state: present
+
+# Create SonarQube directories
+- name: Create SonarQube directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ sonar_user }}"
+    group: "{{ sonar_group }}"
+    mode: "u=rwx,g=rx,o="
+  with_items:
+    - "{{ sonar_install_directory }}"
+    - "{{ sonar_data_dir }}"
+    - "{{ sonar_logs_dir }}"
+    - "{{ sonar_temp_dir }}"
+
+# Configure SonarQube prerequisites
+- name: Set max_map_count value
+  sysctl:
+    name: vm.max_map_count
+    value: "{{ max_map_count }}"
+    state: present
+
+- name: Set max_map_count value
+  sysctl:
+    name: fs.file-max
+    value: "{{ file_max }}"
+    state: present
