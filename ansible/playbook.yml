@@ -3,5 +3,6 @@
 - hosts: sonar
   become: true
   roles:
+    - java
     - sonar
     - logrotate

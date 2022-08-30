@@ -1,0 +1,26 @@
+---
+
+# Install Java using package manager
+- name: Install JAVA packages
+  package:
+    name: "{{ java_packages }}"
+    state: present
+
+# Install JAVA_HOME is set in BASH profile
+- name: Set JAVA_HOME if configured.
+  template:
+    src: java_home.sh.j2
+    dest: /etc/profile.d/java_home.sh
+    mode: 0644
+  when: java_home is defined and java_home
+
+# Check and fail if Java binary not working
+- name: Ensure JAVA is installed
+  command: "java -version"
+  register: prereq_java
+  changed_when: false
+
+- name: Fail if JAVA is not available
+  fail:
+    msg: "JAVA is not installed or configured"
+  when: not prereq_java.rc == 0
