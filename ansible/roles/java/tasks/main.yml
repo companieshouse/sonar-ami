@@ -4,6 +4,13 @@
   shell: "amazon-linux-extras enable java-openjdk11"
   when: ansible_distribution == "Amazon"
 
+# Update the package cache
+- name: Update Package Cache (yum/Amazon)
+  yum:
+    update_cache: yes
+  changed_when: false
+  when: ansible_pkg_mgr == "yum"
+
 # Install Java using package manager
 - name: Install JAVA packages
   package:

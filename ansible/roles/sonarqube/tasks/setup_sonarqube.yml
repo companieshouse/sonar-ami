@@ -65,3 +65,4 @@
       port: "{{sonar_web_port}}/tcp"
       permanent: yes
       state: enabled
+  when: ansible_distribution == "CentOS"
