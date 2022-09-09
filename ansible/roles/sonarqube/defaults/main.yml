@@ -1,9 +1,14 @@
 ---
 #  SonarQube Defaults
 
-# Required packages for SonarQube install (removed after install)
-install_packages:
+# Temporary packages for SonarQube install (removed after install)
+temporary_packages:
   - unzip
+
+# Packages required on the SonarQube server (persistent)
+required_packages:
+  - fontconfig
+  - freetype
 
 # Install requirements
 max_map_count: 524288

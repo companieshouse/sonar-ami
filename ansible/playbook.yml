@@ -3,7 +3,6 @@
 - hosts: sonarqube
   become: true
   roles:
-    - java
-    - sonarqube
-    - logrotate
+    - role: java
+    - role: sonarqube
   

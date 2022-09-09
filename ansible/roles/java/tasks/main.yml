@@ -1,13 +1,28 @@
 ---
+# Check the enable status of the Amazon Java package
+- name: Check Java package enabled status
+  shell: "amazon-linux-extras | grep -qE '([0-9]{,3})\\s{2}({{ amazon_extra_java_package }}=latest)' && echo -n INSTALLED || true"
+  register: amazon_extra
+  changed_when: false
+  when: ansible_distribution == "Amazon"
+
 # Enable the openjdk install via yum
 - name: Enable the JAVA amazon-linux-extras package
-  shell: "amazon-linux-extras enable java-openjdk11"
-  when: ansible_distribution == "Amazon"
+  command: "amazon-linux-extras enable {{ amazon_extra_java_package }}"
+  register: amazon_extra
+  when: ansible_distribution == "Amazon" and amazon_extra.stdout != 'INSTALLED'
+
+# Update the package cache
+- name: Update Package Cache (yum)
+  yum:
+    update_cache: yes
+  changed_when: false
+  when: ansible_pkg_mgr == "yum"
 
 # Install Java using package manager
 - name: Install JAVA packages
   package:
-    name: "{{ java_packages }}"
+    name: "{{ java_package }}"
     state: present
 
 # Install JAVA_HOME is set in BASH profile
