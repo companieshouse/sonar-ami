@@ -1,12 +1,13 @@
 ---
 
 # Install required packages
-- name: Install required packages for install
+- name: Install temporary and required packages
   package:
     name: "{{ item }}"
     state: present
   with_items:
-    - "{{ install_packages }}"
+    - "{{ temporary_packages }}"
+    - "{{ required_packages }}"
 
 # Config SonarQube user
 - name: Create SonarQube system group
@@ -23,6 +24,27 @@
     createhome: no
     state: present
 
+# Configure SonarQube prerequisites with system and user limits
+- name: Add vm.max_map_count={{ max_map_count }} to sysctl
+  sysctl:
+    name: vm.max_map_count
+    value: "{{ max_map_count }}"
+    sysctl_file: /etc/sysctl.d/99-sonarqube.conf
+
+- name: Add fs.file-max={{ file_max }} to sysctl
+  sysctl:
+    name: fs.file-max
+    value: "{{ file_max }}"
+    sysctl_file: /etc/sysctl.d/99-sonarqube.conf
+
+- name: Update the user limits
+  template:
+    src: user.limits.j2
+    dest: /etc/security/limits.d/99-sonarqube.conf
+    owner: root
+    group: root
+    mode: 0644
+
 # Create SonarQube directories
 - name: Create SonarQube directories
   file:
@@ -36,16 +58,3 @@
     - "{{ sonar_data_dir }}"
     - "{{ sonar_logs_dir }}"
     - "{{ sonar_temp_dir }}"
-
-# Configure SonarQube prerequisites
-- name: Set max_map_count value
-  sysctl:
-    name: vm.max_map_count
-    value: "{{ max_map_count }}"
-    state: present
-
-- name: Set max_map_count value
-  sysctl:
-    name: fs.file-max
-    value: "{{ file_max }}"
-    state: present

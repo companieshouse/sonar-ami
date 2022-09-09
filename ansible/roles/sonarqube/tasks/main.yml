@@ -8,9 +8,6 @@
 
 # TODO: Version control JAVA, unzip and SonarQube
 # TODO: Add binary's to binary store
-# TODO: Check these and error if false:
-# the user running SonarQube can open at least 131072 file descriptors
-# the user running SonarQube can open at least 8192 threads
 
 - name: Check JAVA is installed
   include_tasks: check_java.yml
@@ -18,8 +15,12 @@
 - name: Configure Linux
   include_tasks: configure_linux.yml
 
+- name: Check Prerequisites
+  include_tasks: check_prerequisites.yml
+
 - name: Setup SonarQube
   include_tasks: setup_sonarqube.yml
 
 - name: Cleanup
   include_tasks: cleanup_install.yml
+
