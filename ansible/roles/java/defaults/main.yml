@@ -2,7 +2,7 @@
 # Java Defaults
 
 # The name of the Amazon extra package to enable
-amazon_extra_java_package: java-openjdk11
+java_amazon_extra_package: java-openjdk11
 
 # Java package to install
 java_package: java-11-openjdk

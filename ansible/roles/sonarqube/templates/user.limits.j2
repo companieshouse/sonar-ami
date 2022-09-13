@@ -1,4 +1,4 @@
 # /etc/security/limits.d/99-sonarqube.conf
 # Sets resource limits for the SonarQube user.
-{{ sonar_user }}   -   nofile   {{ limitnofile }}
-{{ sonar_user }}   -   nproc    {{ limitnproc }}
+{{ sonar_user }}   -   nofile   {{ sonar_limitnofile }}
+{{ sonar_user }}   -   nproc    {{ sonar_limitnproc }}

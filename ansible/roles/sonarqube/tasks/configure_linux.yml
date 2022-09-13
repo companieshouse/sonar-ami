@@ -6,8 +6,8 @@
     name: "{{ item }}"
     state: present
   with_items:
-    - "{{ temporary_packages }}"
-    - "{{ required_packages }}"
+    - "{{ sonar_temporary_packages }}"
+    - "{{ sonar_required_packages }}"
 
 # Config SonarQube user
 - name: Create SonarQube system group
@@ -25,16 +25,16 @@
     state: present
 
 # Configure SonarQube prerequisites with system and user limits
-- name: Add vm.max_map_count={{ max_map_count }} to sysctl
+- name: Add vm.sonar_max_map_count={{ sonar_max_map_count }} to sysctl
   sysctl:
     name: vm.max_map_count
-    value: "{{ max_map_count }}"
+    value: "{{ sonar_max_map_count }}"
     sysctl_file: /etc/sysctl.d/99-sonarqube.conf
 
-- name: Add fs.file-max={{ file_max }} to sysctl
+- name: Add fs.file-max={{ sonar_file_max }} to sysctl
   sysctl:
     name: fs.file-max
-    value: "{{ file_max }}"
+    value: "{{ sonar_file_max }}"
     sysctl_file: /etc/sysctl.d/99-sonarqube.conf
 
 - name: Update the user limits
