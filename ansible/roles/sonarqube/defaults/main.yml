@@ -2,19 +2,19 @@
 #  SonarQube Defaults
 
 # Temporary packages for SonarQube install (removed after install)
-temporary_packages:
+sonar_temporary_packages:
   - unzip
 
 # Packages required on the SonarQube server (persistent)
-required_packages:
+sonar_required_packages:
   - fontconfig
   - freetype
 
 # Install requirements
-max_map_count: 524288
-file_max: 131072 
-limitnofile: 131072
-limitnproc: 8192
+sonar_max_map_count: 524288
+sonar_file_max: 131072
+sonar_limitnofile: 131072
+sonar_limitnproc: 8192
 
 # SonarQube version to install
 sonar_version: 9.6.0.59041

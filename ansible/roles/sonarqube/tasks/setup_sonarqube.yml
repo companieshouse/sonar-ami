@@ -22,6 +22,14 @@
     group: "{{ sonar_group }}"
     remote_src: yes
 
+# Create symlink for SonarQube folder
+- name: Link the current version to SonarQube folder
+  file:
+    src: "{{ sonar_base_dir }}"
+    dest: "{{ sonar_install_directory }}/sonarqube"
+    state: link
+    owner: "{{ sonar_user }}"
+
 # Check and install SystemD SonarQube service
 - name: Check systemd is service manager
   fail:
