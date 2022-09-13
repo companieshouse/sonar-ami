@@ -1,6 +1,11 @@
 ---
+# Java Defaults
 
-java_packages:
-  - java-11-openjdk
+# The name of the Amazon extra package to enable
+java_amazon_extra_package: java-openjdk11
 
+# Java package to install
+java_package: java-11-openjdk
+
+# Home path of the Java install (Location of Yum install)
 java_home: "/usr/lib/jvm"

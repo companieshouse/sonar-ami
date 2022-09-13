@@ -20,7 +20,15 @@
     dest: "{{ sonar_install_directory }}"
     owner: "{{ sonar_user }}"
     group: "{{ sonar_group }}"
-    copy: no
+    remote_src: yes
+
+# Create symlink for SonarQube folder
+- name: Link the current version to SonarQube folder
+  file:
+    src: "{{ sonar_base_dir }}"
+    dest: "{{ sonar_install_directory }}/sonarqube"
+    state: link
+    owner: "{{ sonar_user }}"
 
 # Check and install SystemD SonarQube service
 - name: Check systemd is service manager
@@ -58,11 +66,3 @@
     owner: "{{ sonar_user }}"
     group: "{{ sonar_group }}"
     mode: "o-w"
-
-# Add SonarQube web port to firewalld
-- name: Add SonarQube web port to firewalld
-  firewalld:
-      port: "{{sonar_web_port}}/tcp"
-      permanent: yes
-      state: enabled
-  when: ansible_distribution == "CentOS"
