@@ -8,6 +8,7 @@
 
 # TODO: Version control JAVA, unzip and SonarQube
 # TODO: Add binary's to binary store
+# TODO: Look at fix for ES (https://community.sonarsource.com/t/access-denied-java-lang-runtimepermission-accessclassinpackage-jdk-internal-org-objectweb-asm/62016)
 
 - name: Check JAVA is installed
   include_tasks: check_java.yml
