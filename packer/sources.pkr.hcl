@@ -10,17 +10,11 @@ source "amazon-ebs" "builder" {
   ssh_username          = var.ssh_username
   ssh_keypair_name      = "packer-builders-${var.aws_region}"
   iam_instance_profile  = "packer-builders-${var.aws_region}"
+  encrypt_boot          = true
 
   launch_block_device_mappings {
     device_name = "/dev/xvda"
     volume_size = var.root_volume_size_gib
-    volume_type = "gp2"
-    delete_on_termination = true
-  }
-
-  launch_block_device_mappings {
-    device_name = "/dev/xvdb"
-    volume_size = var.data_volume_size_gib
     volume_type = "gp2"
     delete_on_termination = true
   }
