@@ -43,12 +43,6 @@ variable "configuration_group" {
   description = "The name of the group to which to add the instance for configuration purposes"
 }
 
-variable "data_volume_size_gib" {
-  type        = number
-  default     = 20
-  description = "The EC2 instance data volume size in Gibibytes (GiB)"
-}
-
 variable "force_delete_snapshot" {
   type        = bool
   default     = false
