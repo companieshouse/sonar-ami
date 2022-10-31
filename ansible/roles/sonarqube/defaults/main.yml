@@ -17,7 +17,7 @@ sonar_limitnofile: 131072
 sonar_limitnproc: 8192
 
 # SonarQube version to install
-sonar_version: 9.6.1.59531
+sonar_version: 9.7.0.61563
 
 # SonarQube URLs
 sonar_source_url: "https://binaries.sonarsource.com"
