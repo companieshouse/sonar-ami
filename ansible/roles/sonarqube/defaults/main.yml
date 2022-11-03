@@ -20,9 +20,9 @@ sonar_limitnproc: 8192
 sonar_version: 9.7.1.62043
 
 # SonarQube URLs
-sonar_source_url: "https://binaries.sonarsource.com"
+sonar_source_url: ""
 sonar_archive: "sonarqube-{{ sonar_version }}.zip"
-sonar_download_url: "{{ sonar_source_url }}/Distribution/sonarqube/{{ sonar_archive }}"
+sonar_download_path: "/packages/sonarqube/{{ sonar_archive }}"
 
 # SonarQube directorys
 sonar_install_directory: /opt/sonarqube
