@@ -7,9 +7,9 @@
   register: tempfile
 
 # Download and extract SonarQube binaries
-- name: Download app library archive from s3
+- name: Download SonarQube archive from s3
   aws_s3:
-    bucket: "{{ sonar_download_url }}"
+    bucket: "{{ sonar_source_url }}"
     object: "{{ sonar_download_path }}"
     dest: "{{ tempfile.path }}/{{ sonar_archive }}"
     mode: get
