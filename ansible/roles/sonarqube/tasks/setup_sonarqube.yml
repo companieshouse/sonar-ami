@@ -6,6 +6,11 @@
     state: directory
   register: tempfile
 
+# Install Ansible S3 requirements
+- name: Install boto3 python package
+  pip:
+    name: boto3
+
 # Download and extract SonarQube binaries
 - name: Download SonarQube archive from s3
   aws_s3:
