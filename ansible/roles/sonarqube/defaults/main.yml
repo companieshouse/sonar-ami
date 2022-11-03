@@ -5,6 +5,10 @@
 sonar_temporary_packages:
   - unzip
 
+# Temporary packages for pip (removed after install)
+pip_temporary_packages:
+  - boto3
+
 # Packages required on the SonarQube server (persistent)
 sonar_required_packages:
   - fontconfig
