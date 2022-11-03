@@ -9,12 +9,10 @@
     - "{{ sonar_temporary_packages }}"
 
 # Remove unnecessary pip packages
-- name: Remove redundant pip packages
+- name: Remove redundant pip package
   pip:
-    name: "{{ item }}"
+    name: boto3
     state: absent
-  with_items:
-    - "{{ pip_temporary_packages }}"
 
 # Remove temporary folder
 - name: Remove the temporary folder
