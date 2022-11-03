@@ -79,6 +79,11 @@ variable "ssh_username" {
   description = "The username Packer will use when connecting with SSH"
 }
 
+variable "aws_s3_release_bucket" {
+  type        = string
+  description = "Bucket that contains any artifacts required to complete the build process, will be passed to Ansible"
+}
+
 variable "version" {
   type        = string
   description = "The semantic version number for the AMI; the version string will be appended automatically to the name tags added to the resulting AMI and snapshot(s)"
