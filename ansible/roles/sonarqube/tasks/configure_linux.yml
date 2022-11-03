@@ -9,6 +9,14 @@
     - "{{ sonar_temporary_packages }}"
     - "{{ sonar_required_packages }}"
 
+# Install Ansible S3 requirements
+- name: Install boto3 python package
+  pip:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ pip_temporary_packages }}"
+
 # Config SonarQube user
 - name: Create SonarQube system group
   group:
