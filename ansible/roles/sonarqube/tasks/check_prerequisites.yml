@@ -15,7 +15,10 @@
 
 # Check the user specific limits
 - name: Check if user {{ sonar_user }} file descriptors less than 131072
-  command: "su - {{ sonar_user }} --shell /bin/bash -c \"ulimit -n\" 2> /dev/null"
+  command: "ulimit -n 2> /dev/null"
+  become: true
+  become_method: su
+  become_user: "{{ sonar_user }}"
   register: prereq_fd
   failed_when: not prereq_fd.stdout|int >= 131072
   changed_when: false
