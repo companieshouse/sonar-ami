@@ -15,17 +15,23 @@
 
 # Check the user specific limits
 - name: Check if user {{ sonar_user }} file descriptors less than 131072
-  command: "ulimit -n 2> /dev/null"
   become: true
   become_method: su
+  become_exe: "sudo su"
   become_user: "{{ sonar_user }}"
-  become_flags: '-s /bin/sh'
+  become_flags: "--shell /bin/sh"
+  shell: "ulimit -n"
   register: prereq_fd
   failed_when: not prereq_fd.stdout|int >= 131072
   changed_when: false
 
 - name: Check if user {{ sonar_user }} threads less than 8192
-  command: "su - {{ sonar_user }} --shell /bin/bash -c \"ulimit -u\" 2> /dev/null"
+  become: true
+  become_method: su
+  become_exe: "sudo su"
+  become_user: "{{ sonar_user }}"
+  become_flags: "--shell /bin/sh"
+  shell: "ulimit -u"
   register: prereq_td
   failed_when: not prereq_td.stdout|int >= 8192
   changed_when: false
