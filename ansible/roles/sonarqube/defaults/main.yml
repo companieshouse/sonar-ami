@@ -15,8 +15,8 @@ sonar_required_packages:
   - freetype
 
 # Install requirements
-sonar_max_map_count: 524288
-sonar_file_max: 131072
+sonar_max_map_count: "524288"
+sonar_file_max: "131072"
 sonar_limitnofile: 131072
 sonar_limitnproc: 8192
 
