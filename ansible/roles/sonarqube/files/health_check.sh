@@ -12,12 +12,14 @@
 fail_health () {
     printf "$(date): health check failed\n"
     aws --region eu-west-2 autoscaling set-instance-health --instance-id $INSTANCE_ID --health-status Unhealthy
+    exit 1
 }
 
 # Succeed health check and update autoscaling group
 succeed_health () {
     printf "$(date): health check successful\n"
     aws --region eu-west-2 autoscaling set-instance-health --instance-id $INSTANCE_ID --health-status Healthy
+    exit 0
 }
 
 # Main
@@ -47,14 +49,12 @@ PROPERTIES_FILE="/opt/sonarqube/sonarqube/conf/sonar.properties"
 if ! grep -Fq "sonar.jdbc.url=jdbc:postgresql" $PROPERTIES_FILE 2>&1; then
     printf "$(date): database has not been configured\n"
     fail_health
-    continue
 fi
 
 PROPERTIES_FILE="/opt/sonarqube/sonarqube/conf/sonar.properties"
 if ! systemctl is-active --quiet sonar; then
     printf "$(date): service sonar is not active\n"
     fail_health
-    continue
 fi    
 
 # Check that the web service is show Sonarqube
