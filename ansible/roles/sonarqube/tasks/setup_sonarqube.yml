@@ -69,15 +69,15 @@
 
 # Create health check script
 - name: Copy health check script
-  template:
-    src: health_check.sh
+  copy:
+    src: files/health_check.sh
     dest: "{{ sonar_install_directory }}/sonarqube/health_check.sh"
     owner: "{{ sonar_user }}"
     group: "{{ sonar_group }}"
     mode: 0550
 
 - name: Creates a cron file for health check
-  ansible.builtin.cron:
+  cron:
     name: sonarqube health check
     weekday: "*"
     minute: "*/45"
