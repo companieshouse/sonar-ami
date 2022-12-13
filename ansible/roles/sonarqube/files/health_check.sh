@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Health Check for Sonarqube
+
 # Configure descriptors for logging
 exec 1> >(logger -s -t $(basename $0)) 2>&1
 
