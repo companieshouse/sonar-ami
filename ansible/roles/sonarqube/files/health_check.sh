@@ -61,4 +61,7 @@ fi
 if curl -s "127.0.0.1:9000" | grep -Fq "window.serverStatus = 'UP'" 2>&1; then
     printf "$(date): sonarqube web front end found\n"
     succeed_health
+else
+    printf "$(date): Failed to check the sonarqube frontend\n"
+    fail_health
 fi
