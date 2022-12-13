@@ -46,7 +46,7 @@ fi
 
 # Check if cloud-init has configure the properties file
 PROPERTIES_FILE="/opt/sonarqube/sonarqube/conf/sonar.properties"
-if ! grep -Fq "sonar.jdbc.url=jdbc:postgresql" $PROPERTIES_FILE 2>&1; then
+if grep -Fq "#sonar.jdbc.url=jdbc:postgresql" $PROPERTIES_FILE 2>&1; then
     printf "$(date): database has not been configured\n"
     fail_health
 fi
