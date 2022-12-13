@@ -80,7 +80,7 @@
   cron:
     name: sonarqube health check
     weekday: "*"
-    minute: "*/45"
+    minute: "*/1"
     hour: "*"
     user: "{{ sonar_user }}"
     job: "{{ sonar_install_directory }}/sonarqube/health_check.sh"
