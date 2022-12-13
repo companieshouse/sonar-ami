@@ -27,7 +27,6 @@
     group: "{{ sonar_group }}"
     shell: "/sbin/nologin"
     comment: "SonarQube System user"
-    createhome: no
     state: present
 
 # Configure SonarQube prerequisites with system and user limits
