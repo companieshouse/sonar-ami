@@ -42,6 +42,11 @@ if [[ $IS_IN_ASG == "[]" ]]; then
     exit 1
 fi
 
+if (( $(cat /proc/uptime | cut -d '.' -f 1) < 180 )); then
+    echo "waiting for instance to be up for longer than 180 seconds"
+    exit 0
+fi
+
 # Check if cloud-init has configure the properties file
 PROPERTIES_FILE="/opt/sonarqube/sonarqube/conf/sonar.properties"
 if grep -Fq "#sonar.jdbc.url=jdbc:postgresql" $PROPERTIES_FILE 2>&1; then
