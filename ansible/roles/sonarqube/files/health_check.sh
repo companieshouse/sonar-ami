@@ -42,8 +42,8 @@ if [[ $IS_IN_ASG == "[]" ]]; then
     exit 1
 fi
 
-if (( $(cat /proc/uptime | cut -d '.' -f 1) < 180 )); then
-    echo "waiting for instance to be up for longer than 180 seconds"
+if (( $(cat /proc/uptime | cut -d '.' -f 1) < 360 )); then
+    echo "waiting for instance to be up for longer than 360 seconds"
     exit 0
 fi
 
