@@ -9,7 +9,7 @@
 # Download and extract SonarQube binaries
 - name: Download SonarQube archive from s3
   aws_s3:
-    bucket: "{{ sonar_source_url }}"
+    bucket: "{{ release_bucket }}"
     object: "{{ sonar_download_path }}"
     dest: "{{ tempfile.path }}/{{ sonar_archive }}"
     mode: get
