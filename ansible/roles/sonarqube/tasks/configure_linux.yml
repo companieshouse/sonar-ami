@@ -20,6 +20,7 @@
   group:
     name: "{{ sonar_group }}"
     state: present
+    system: true
 
 - name: Create SonarQube system user
   user:
