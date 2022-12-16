@@ -24,7 +24,7 @@ sonar_limitnproc: 8192
 sonar_version: 9.7.1.62043
 
 # SonarQube URLs
-sonar_source_url: ""
+release_bucket: "" # Populated in pipeline
 sonar_archive: "sonarqube-enterprise-{{ sonar_version }}.zip"
 sonar_download_path: "/packages/sonarqube/{{ sonar_archive }}"
 
