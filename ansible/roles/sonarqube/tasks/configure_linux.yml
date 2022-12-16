@@ -19,8 +19,8 @@
 - name: Create SonarQube system group
   group:
     name: "{{ sonar_group }}"
-    state: present
     system: true
+    state: present
 
 - name: Create SonarQube system user
   user:
@@ -28,6 +28,7 @@
     group: "{{ sonar_group }}"
     shell: "/sbin/nologin"
     comment: "SonarQube System user"
+    system: true
     state: present
 
 # Configure SonarQube prerequisites with system and user limits
