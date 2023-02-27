@@ -54,7 +54,6 @@ if grep -Fq "#sonar.jdbc.url=jdbc:postgresql" $PROPERTIES_FILE 2>&1; then
     fail_health
 fi
 
-PROPERTIES_FILE="/opt/sonarqube/sonarqube/conf/sonar.properties"
 if ! systemctl is-active --quiet sonar; then
     echo "service sonar is not active"
     fail_health
