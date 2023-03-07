@@ -5,18 +5,21 @@
 # Configure descriptors for logging
 exec 1> >(logger -s -t $(basename $0)) 2>&1
 
+# Set extra error handling
+set -e
+
 # Functions
 # Fail health check and update auto scaling group
 fail_health () {
     echo "health check failed"
-    aws --region eu-west-2 autoscaling set-instance-health --instance-id $INSTANCE_ID --health-status Unhealthy
+    aws --region $REGION autoscaling set-instance-health --instance-id $INSTANCE_ID --health-status Unhealthy
     exit 1
 }
 
 # Succeed health check and update autoscaling group
 succeed_health () {
     echo "health check successful"
-    aws --region eu-west-2 autoscaling set-instance-health --instance-id $INSTANCE_ID --health-status Healthy
+    aws --region $REGION autoscaling set-instance-health --instance-id $INSTANCE_ID --health-status Healthy
     exit 0
 }
 
@@ -31,17 +34,26 @@ for PKG in "${REQUIRED_PACKAGES[@]}"; do
     fi
 done
 
-# Set the instance id
+# Required variables
+REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r ".region")
 INSTANCE_ID=$(ec2-metadata -i | cut -d " " -f 2)
 
-# Check if instance is in auto scaling group
-IS_IN_ASG=$(aws --region eu-west-2 autoscaling describe-auto-scaling-instances --instance-ids $INSTANCE_ID | jq ".AutoScalingInstances")
-if [[ $IS_IN_ASG == "[]" ]]; then
-    echo "Instance: $INSTANCE_ID is not in an auto scaling group"
+# Ensure that we get the instance and region set
+if [ -z "$INSTANCE_ID" ] || [ -z "$REGION" ]; then
+    echo "Failed to get instance id and/or region"
     echo "Exiting"
     exit 1
 fi
 
+# Check if instance is in auto scaling group
+IS_IN_ASG=$(aws --region $REGION autoscaling describe-auto-scaling-instances --instance-ids $INSTANCE_ID | jq ".AutoScalingInstances")
+if [[ "$IS_IN_ASG" == "[]" ]] || [ -z "$IS_IN_ASG" ]; then
+    echo "Failed to find instance ($INSTANCE_ID) in auto scaling group"
+    echo "Exiting"
+    exit 1
+fi
+
+# Ensure the instance has been up for at least 360 seconds
 if (( $(cat /proc/uptime | cut -d '.' -f 1) < 360 )); then
     echo "waiting for instance to be up for longer than 360 seconds"
     exit 0
@@ -54,10 +66,11 @@ if grep -Fq "#sonar.jdbc.url=jdbc:postgresql" $PROPERTIES_FILE 2>&1; then
     fail_health
 fi
 
+# Check that the sonar service is active
 if ! systemctl is-active --quiet sonar; then
     echo "service sonar is not active"
     fail_health
-fi    
+fi
 
 # Check that the web service is show Sonarqube
 if curl -s "127.0.0.1:9000" | grep -Fq "window.serverStatus = 'UP'" 2>&1; then
