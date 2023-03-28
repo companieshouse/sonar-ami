@@ -37,7 +37,7 @@
 
 # Check and fail if Java binary not working
 - name: Ensure JAVA is installed
-  ansible.builtin.command: "java -version"
+  command: "java -version"
   register: prereq_java
   changed_when: false
 
