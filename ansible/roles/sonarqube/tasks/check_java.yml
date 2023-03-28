@@ -2,7 +2,7 @@
 
 # Check that JAVA is installed
 - name: Check JAVA is installed
-  ansible.builtin.command: "java -version"
+  command: "java -version"
   register: prereq_java
   changed_when: false
 
