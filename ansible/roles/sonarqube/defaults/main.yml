@@ -2,7 +2,7 @@
 #  SonarQube Defaults
 
 # Temporary packages for SonarQube install (removed after install)
-sonar_temporary_packages:
+sonarqube_temporary_packages:
   - unzip
 
 # Temporary packages for pip (removed after install)
@@ -10,36 +10,45 @@ pip_temporary_packages:
   - boto3
 
 # Packages required on the SonarQube server (persistent)
-sonar_required_packages:
+sonarqube_required_packages:
   - fontconfig
   - freetype
 
 # Install requirements
-sonar_max_map_count: "524288"
-sonar_file_max: "131072"
-sonar_limitnofile: 131072
-sonar_limitnproc: 8192
+sonarqube_max_map_count: "524288"
+sonarqube_file_max: "131072"
+sonarqube_limitnofile: 131072
+sonarqube_limitnproc: 8192
 
 # SonarQube version to install
-sonar_version: 9.7.1.62043
+sonarqube_version: 9.7.1.62043
+
+# SonarQube service name
+sonarqube_service_name: "sonarqube"
+
+# SonarQube health check for ASG (unit in seconds)
+health_check_service_name: "sonarqube_asg_notifier"
+healthcheck_boot_wait: 360
+healthcheck_check_interval: 60
 
 # SonarQube URLs
 release_bucket: "" # Populated in pipeline
-sonar_archive: "sonarqube-enterprise-{{ sonar_version }}.zip"
-sonar_download_path: "/packages/sonarqube/{{ sonar_archive }}"
+sonarqube_archive: "sonarqube-enterprise-{{ sonarqube_version }}.zip"
+sonarqube_download_path: "/packages/sonarqube/{{ sonarqube_archive }}"
 
 # SonarQube directorys
-sonar_install_directory: /opt/sonarqube
-sonar_base_dir: "{{ sonar_install_directory }}/sonarqube-{{ sonar_version }}"
-sonar_daemon_dir: "{{ sonar_base_dir }}/bin/linux-x86-{{ ansible_userspace_bits }}"
-sonar_conf_dir: "{{ sonar_base_dir }}/conf"
-sonar_logs_dir: "/var/log/sonarqube"
-sonar_data_dir: "{{ sonar_base_dir }}/data" # embedded database and search index
-sonar_temp_dir: "{{ sonar_base_dir }}/temp"
+sonarqube_install_directory: /opt/sonarqube
+sonarqube_base_dir: "{{ sonarqube_install_directory }}/sonarqube-{{ sonar_version }}"
+sonarqube_daemon_dir: "{{ sonarqube_base_dir }}/bin/linux-x86-{{ ansible_userspace_bits }}"
+sonarqube_conf_dir: "{{ sonarqube_base_dir }}/conf"
+sonarqube_logs_dir: "/var/log/sonarqube"
+sonarqube_data_dir: "{{ sonarqube_base_dir }}/data" # embedded database and search index
+sonarqube_temp_dir: "{{ sonarqube_base_dir }}/temp"
+sonarqube_management_dir: "{{ sonarqube_install_directory }}/management"
 
 # SonarQube user configuration
-sonar_group: sonar
-sonar_user: sonar
+sonarqube_group: sonarqube
+sonarqube_user: sonarqube
 
 # TCP port for incoming HTTP connections. Default value is 9000.
-sonar_web_port: 9000
+sonarqube_web_port: 9000
