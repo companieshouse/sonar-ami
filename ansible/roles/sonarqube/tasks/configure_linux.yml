@@ -2,66 +2,67 @@
 
 # Install required packages
 - name: Install temporary and required packages
-  package:
+  ansible.builtin.package:
     name: "{{ item }}"
     state: present
   with_items:
-    - "{{ sonar_temporary_packages }}"
-    - "{{ sonar_required_packages }}"
+    - "{{ sonarqube_temporary_packages }}"
+    - "{{ sonarqube_required_packages }}"
 
 # Install Ansible S3 requirements
 - name: Install boto3 python package
-  pip:
+  ansible.builtin.pip:
     name: boto3
     state: present
 
 # Config SonarQube user
 - name: Create SonarQube system group
-  group:
-    name: "{{ sonar_group }}"
+  ansible.builtin.group:
+    name: "{{ sonarqube_group }}"
     system: true
     state: present
 
 - name: Create SonarQube system user
-  user:
-    name: "{{ sonar_user }}"
-    group: "{{ sonar_group }}"
+  ansible.builtin.user:
+    name: "{{ sonarqube_user }}"
+    group: "{{ sonarqube_group }}"
     shell: "/sbin/nologin"
     comment: "SonarQube System user"
     system: true
     state: present
 
 # Configure SonarQube prerequisites with system and user limits
-- name: Add vm.sonar_max_map_count={{ sonar_max_map_count }} to sysctl
-  sysctl:
+- name: Update vm.sonar_max_map_count in sysctl
+  ansible.posix.sysctl:
     name: vm.max_map_count
-    value: "{{ sonar_max_map_count }}"
+    value: "{{ sonarqube_max_map_count }}"
     sysctl_file: /etc/sysctl.d/99-sonarqube.conf
 
-- name: Add fs.file-max={{ sonar_file_max }} to sysctl
-  sysctl:
+- name: Update fs.file-max in sysctl
+  ansible.posix.sysctl:
     name: fs.file-max
-    value: "{{ sonar_file_max }}"
+    value: "{{ sonarqube_file_max }}"
     sysctl_file: /etc/sysctl.d/99-sonarqube.conf
 
 - name: Update the user limits
-  template:
+  ansible.builtin.template:
     src: user.limits.j2
     dest: /etc/security/limits.d/99-sonarqube.conf
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 # Create SonarQube directories
 - name: Create SonarQube directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ sonar_user }}"
-    group: "{{ sonar_group }}"
+    owner: "{{ sonarqube_user }}"
+    group: "{{ sonarqube_group }}"
     mode: "u=rwx,g=rx,o="
   with_items:
-    - "{{ sonar_install_directory }}"
-    - "{{ sonar_data_dir }}"
-    - "{{ sonar_logs_dir }}"
-    - "{{ sonar_temp_dir }}"
+    - "{{ sonarqube_install_directory }}"
+    - "{{ sonarqube_data_dir }}"
+    - "{{ sonarqube_logs_dir }}"
+    - "{{ sonarqube_temp_dir }}"
+    - "{{ sonarqube_management_dir }}"

@@ -1,8 +1,8 @@
 ---
 
-- hosts: sonarqube
+- name: Install Sonarqube via Ansible
+  hosts: sonarqube
   become: true
   roles:
     - role: java
     - role: sonarqube
-  

@@ -1,0 +1,11 @@
+[Unit]
+Description=Sonarqube ({{ sonarqube_version }}) health check service for Auto Scaling Groups
+
+[Service]
+Type=oneshot
+ExecStart={{ sonarqube_management_dir }}/auto_scaling_notifier.sh
+User={{ sonarqube_user }}
+Group={{ sonarqube_group }}
+
+[Install]
+WantedBy=multi-user.target

@@ -2,13 +2,12 @@
 
 # Check that JAVA is installed
 - name: Check JAVA is installed
-  command: "java -version"
+  ansible.builtin.command: "java -version"
   register: prereq_java
   changed_when: false
 
 # Fail if it is not installed or configured
 - name: Fail if JAVA is not found
-  fail:
+  ansible.builtin.fail:
     msg: "JAVA is not installed or configured correctly"
   when: not prereq_java.rc == 0
-  
