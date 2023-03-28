@@ -4,7 +4,6 @@
   ansible.builtin.shell: "set -o pipefail && amazon-linux-extras | grep -qE '([0-9]{,3})\\s{2}({{ java_amazon_extra_package }}=latest)' && \
     echo -n INSTALLED || true"
   register: amazon_extra
-  changed_when: false
   when: ansible_distribution == "Amazon"
 
 # Enable the openjdk install via yum
