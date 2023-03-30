@@ -127,7 +127,7 @@ main () {
     log "Using instanceId: ${instance_id}"
 
     if in_auto_scaling_group; then
-        sonarqube_properties_database_check "{{ sonarqube_base_dir }}/conf/sonarqube.properties"
+        sonarqube_properties_database_check "{{ sonarqube_base_dir }}/conf/sonar.properties"
         sonarqube_service_check "{{ sonarqube_service_name }}"
         sonarqube_webservice_check "127.0.0.1:{{ sonarqube_web_port }}"
     fi
