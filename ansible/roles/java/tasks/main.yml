@@ -9,7 +9,7 @@
 
 # Enable the openjdk install via yum
 - name: Enable the JAVA amazon-linux-extras package
-  ansible.builtin.command: "amazon-linux-extras enable {{ java_amazon_extra_package }}"
+  command: "amazon-linux-extras enable {{ java_amazon_extra_package }}"
   register: amazon_extra
   changed_when: amazon_extra.rc != 0
   when: ansible_distribution == "Amazon" and amazon_extra.stdout != 'INSTALLED'
