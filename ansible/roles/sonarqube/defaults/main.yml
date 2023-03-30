@@ -38,7 +38,7 @@ sonarqube_download_path: "/packages/sonarqube/{{ sonarqube_archive }}"
 
 # SonarQube directorys
 sonarqube_install_directory: /opt/sonarqube
-sonarqube_base_dir: "{{ sonarqube_install_directory }}/sonarqube-{{ sonar_version }}"
+sonarqube_base_dir: "{{ sonarqube_install_directory }}/sonarqube-{{ sonarqube_version }}"
 sonarqube_daemon_dir: "{{ sonarqube_base_dir }}/bin/linux-x86-{{ ansible_userspace_bits }}"
 sonarqube_conf_dir: "{{ sonarqube_base_dir }}/conf"
 sonarqube_logs_dir: "/var/log/sonarqube"

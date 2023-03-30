@@ -1,5 +1,4 @@
 ---
-
 # Create temporary directory for build artifacts
 - name: Create temporary build directory
   ansible.builtin.tempfile:
@@ -8,7 +7,7 @@
 
 # Download and extract SonarQube binaries
 - name: Download SonarQube archive from S3
-  amazon.aws.s3_object:
+  aws_s3:
     bucket: "{{ release_bucket }}"
     object: "{{ sonarqube_download_path }}"
     dest: "{{ tempfile.path }}/{{ sonarqube_archive }}"
@@ -51,7 +50,7 @@
     state: started
     enabled: true
 
-# Create health check service with required scripts
+# Create health check service with required scripts (enable in Terraform)
 - name: Copy ASG health check systemd unit file into place
   ansible.builtin.template:
     src: sonarqube_asg_notifier.service.j2
@@ -69,12 +68,6 @@
     group: root
     mode: "0755"
   register: systemd_service
-
-- name: Ensure SonarQube ASG notifier is running and set to start on boot
-  ansible.builtin.service:
-    name: "{{ health_check_service_name }}.timer"
-    state: started
-    enabled: true
 
 - name: Copy health check script
   ansible.builtin.template:
