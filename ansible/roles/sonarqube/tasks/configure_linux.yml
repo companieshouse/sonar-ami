@@ -23,7 +23,7 @@
     state: present
 
 - name: Create SonarQube system user
-  ansible.builtin.user:
+  user:
     name: "{{ sonarqube_user }}"
     group: "{{ sonarqube_group }}"
     shell: "/sbin/nologin"
@@ -33,13 +33,13 @@
 
 # Configure SonarQube prerequisites with system and user limits
 - name: Update vm.sonar_max_map_count in sysctl
-  ansible.posix.sysctl:
+  sysctl:
     name: vm.max_map_count
     value: "{{ sonarqube_max_map_count }}"
     sysctl_file: /etc/sysctl.d/99-sonarqube.conf
 
 - name: Update fs.file-max in sysctl
-  ansible.posix.sysctl:
+  sysctl:
     name: fs.file-max
     value: "{{ sonarqube_file_max }}"
     sysctl_file: /etc/sysctl.d/99-sonarqube.conf
