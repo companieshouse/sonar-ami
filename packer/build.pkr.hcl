@@ -8,7 +8,7 @@ build {
     playbook_file = "${var.playbook_file_path}"
     extra_arguments  = [
       "-e", "aws_region=${var.aws_region}",
-      "-e", "release_bucket=${var.release_bucket}"
+      "-e", "aws_s3_release_bucket=${var.aws_s3_release_bucket}"
     ]
   }
 }

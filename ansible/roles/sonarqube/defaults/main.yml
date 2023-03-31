@@ -32,7 +32,7 @@ healthcheck_boot_wait: 360
 healthcheck_check_interval: 60
 
 # SonarQube URLs
-release_bucket: "" # Populated in pipeline
+aws_s3_release_bucket: "" # Populated in pipeline
 sonarqube_archive: "sonarqube-enterprise-{{ sonarqube_version }}.zip"
 sonarqube_download_path: "/packages/sonarqube/{{ sonarqube_archive }}"
 

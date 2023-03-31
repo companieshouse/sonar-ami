@@ -79,7 +79,7 @@ variable "ssh_username" {
   description = "The username Packer will use when connecting with SSH"
 }
 
-variable "release_bucket" {
+variable "aws_s3_release_bucket" {
   type        = string
   description = "The AWS S3 bucket that contains any artifacts required to complete the build process, will be passed to Ansible"
 }
