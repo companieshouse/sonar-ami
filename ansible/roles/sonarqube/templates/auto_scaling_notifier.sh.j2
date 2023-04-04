@@ -70,7 +70,7 @@ wait_uptime () {
     local time="${1}"
 
     log "Checking system has been up for ${time} seconds"
-    if [[ $(cut -d '.' -f 1 < /proc/uptime) < "${time}" ]]; then
+    if [[ "$(cut -d '.' -f 1 < /proc/uptime)" < "${time}" ]]; then
         log "Waiting for instance to be up for longer than ${time} seconds before running"
         exit 0
     fi
