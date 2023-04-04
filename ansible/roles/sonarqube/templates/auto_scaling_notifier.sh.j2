@@ -65,7 +65,7 @@ in_auto_scaling_group () {
     fi
 }
 
-# Quit before X uptime
+# Quit before X uptime (must wait for the health check grace period)
 wait_uptime () {
     local time="${1}"
 
@@ -127,6 +127,7 @@ main () {
     log "Using instanceId: ${instance_id}"
 
     if in_auto_scaling_group; then
+        wait_uptime 300
         sonarqube_properties_database_check "{{ sonarqube_base_dir }}/conf/sonar.properties"
         sonarqube_service_check "{{ sonarqube_service_name }}"
         sonarqube_webservice_check "127.0.0.1:{{ sonarqube_web_port }}"
