@@ -44,12 +44,6 @@
     mode: "0755"
   register: systemd_service
 
-- name: Ensure SonarQube is running and set to start on boot
-  ansible.builtin.service:
-    name: "{{ sonarqube_service_name }}.service"
-    state: started
-    enabled: true
-
 # Create health check service with required scripts (enable in Terraform)
 - name: Copy ASG health check systemd unit file into place
   ansible.builtin.template:
@@ -76,12 +70,6 @@
     owner: "{{ sonarqube_user }}"
     group: "{{ sonarqube_group }}"
     mode: "0550"
-
-# Reload systemd daemon after service changes
-- name: Force systemd to reread configs
-  ansible.builtin.systemd:
-    daemon_reload: true
-  when: systemd_service is defined and systemd_service.changed
 
 # Enforce permissions on the SoanrQube directory
 - name: Ensure SonarQube files permissions
