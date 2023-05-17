@@ -2,11 +2,17 @@
 
 # Remove packages we used during the install
 - name: Remove redundant packages
-  package:
+  ansible.builtin.package:
     name: "{{ item }}"
     state: absent
   with_items:
-    - "{{ sonar_temporary_packages }}"
+    - "{{ sonarqube_temporary_packages }}"
+
+# Remove unnecessary pip packages
+- name: Remove redundant pip package
+  ansible.builtin.pip:
+    name: boto3
+    state: absent
 
 # Remove temporary folder
 - name: Remove the temporary folder
@@ -14,4 +20,3 @@
     path: "{{ tempfile.path }}"
     state: absent
   when: tempfile.path is defined
-  

@@ -1,14 +1,5 @@
 ---
-# SonarQube install requirements 
-# https://docs.sonarqube.org/latest/requirements/requirements/
-# This playbook follows the requirements as of 26/08/2022
-
-# Some items in this playbook are referenced from:
-# https://github.com/lrk/ansible-role-sonarqube
-
-# TODO: Version control JAVA, unzip and SonarQube
-# TODO: Add binary's to binary store
-# TODO: Look at fix for ES (https://community.sonarsource.com/t/access-denied-java-lang-runtimepermission-accessclassinpackage-jdk-internal-org-objectweb-asm/62016)
+# Main - Install Java, Configure Linux and install Sonarqube
 
 - name: Check JAVA is installed
   include_tasks: check_java.yml
@@ -16,12 +7,8 @@
 - name: Configure Linux
   include_tasks: configure_linux.yml
 
-- name: Check Prerequisites
-  include_tasks: check_prerequisites.yml
-
 - name: Setup SonarQube
   include_tasks: setup_sonarqube.yml
 
 - name: Cleanup
   include_tasks: cleanup_install.yml
-

@@ -1,68 +1,82 @@
 ---
-
 # Create temporary directory for build artifacts
 - name: Create temporary build directory
-  tempfile:
+  ansible.builtin.tempfile:
     state: directory
   register: tempfile
 
 # Download and extract SonarQube binaries
-- name: Download SonarQube binaries
-  get_url:
-    url: "{{ sonar_download_url }}"
-    dest: "{{ tempfile.path }}/{{ sonar_archive }}"
-  retries: 5
-  delay: 10
+- name: Download SonarQube archive from S3
+  aws_s3:
+    bucket: "{{ aws_s3_release_bucket }}"
+    object: "{{ sonarqube_download_path }}"
+    dest: "{{ tempfile.path }}/{{ sonarqube_archive }}"
+    mode: get
 
 - name: Expand SonarQube binaries
-  unarchive:
-    src: "{{ tempfile.path }}/{{ sonar_archive }}"
-    dest: "{{ sonar_install_directory }}"
-    owner: "{{ sonar_user }}"
-    group: "{{ sonar_group }}"
-    remote_src: yes
+  ansible.builtin.unarchive:
+    src: "{{ tempfile.path }}/{{ sonarqube_archive }}"
+    dest: "{{ sonarqube_install_directory }}"
+    owner: "{{ sonarqube_user }}"
+    group: "{{ sonarqube_group }}"
+    remote_src: true
 
 # Create symlink for SonarQube folder
 - name: Link the current version to SonarQube folder
-  file:
-    src: "{{ sonar_base_dir }}"
-    dest: "{{ sonar_install_directory }}/sonarqube"
+  ansible.builtin.file:
+    src: "{{ sonarqube_base_dir }}"
+    dest: "{{ sonarqube_install_directory }}/sonarqube"
     state: link
-    owner: "{{ sonar_user }}"
+    owner: "{{ sonarqube_user }}"
 
-# Check and install SystemD SonarQube service
+# Check and install Systemd SonarQube service
 - name: Check systemd is service manager
-  fail:
+  ansible.builtin.fail:
     msg: "This Ansible script expects the systemd service manager"
   when: "ansible_service_mgr != 'systemd'"
 
 - name: Copy SonarQube systemd unit file into place
-  template:
-    src: sonar.service.j2
-    dest: /etc/systemd/system/sonar.service
+  ansible.builtin.template:
+    src: sonarqube.service.j2
+    dest: "/etc/systemd/system/{{ sonarqube_service_name }}.service"
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
   register: systemd_service
-  when: "ansible_service_mgr == 'systemd'"
 
-- name: Force systemd to reread configs
-  systemd:
-    daemon_reload: yes
-  when: systemd_service is defined and systemd_service.changed
+# Create health check service with required scripts (enable in Terraform)
+- name: Copy ASG health check systemd unit file into place
+  ansible.builtin.template:
+    src: sonarqube_asg_notifier.service.j2
+    dest: "/etc/systemd/system/{{ health_check_service_name }}.service"
+    owner: root
+    group: root
+    mode: "0755"
+  register: systemd_service
 
-- name: Ensure SonarQube is running and set to start on boot
-  service:
-    name: sonar
-    state: started
-    enabled: yes
+- name: Copy ASG systemd timer file into place
+  ansible.builtin.template:
+    src: sonarqube_asg_notifier.timer.j2
+    dest: "/etc/systemd/system/{{ health_check_service_name }}.timer"
+    owner: root
+    group: root
+    mode: "0755"
+  register: systemd_service
+
+- name: Copy health check script
+  ansible.builtin.template:
+    src: auto_scaling_notifier.sh.j2
+    dest: "{{ sonarqube_management_dir }}/auto_scaling_notifier.sh"
+    owner: "{{ sonarqube_user }}"
+    group: "{{ sonarqube_group }}"
+    mode: "0550"
 
 # Enforce permissions on the SoanrQube directory
 - name: Ensure SonarQube files permissions
-  file:
-    path: "{{ sonar_install_directory }}"
+  ansible.builtin.file:
+    path: "{{ sonarqube_install_directory }}"
     state: directory
-    recurse: yes
-    owner: "{{ sonar_user }}"
-    group: "{{ sonar_group }}"
+    owner: "{{ sonarqube_user }}"
+    group: "{{ sonarqube_group }}"
     mode: "o-w"
+    recurse: true

@@ -1,0 +1,137 @@
+#!/bin/bash
+
+# Auto scaling health notifier for Sonarqube
+
+# Script Variables
+instance_metadata_url="http://169.254.169.254"
+
+# Functions
+# Simple log function
+log () {
+    local message="${1}"
+
+    echo "${message}"
+}
+
+# Handles the exit status with log message
+exit_handler () {
+    local exit_code="${1}"
+    local message="${2}"
+
+    if [[ -z "${exit_code}" || -z "${message}" ]]; then
+        log "Invalid arguments supplied (${FUNCNAME[0]}:${LINENO})"
+        exit 1
+    fi
+
+    if [[ "${exit_code}" -ne "0" ]]; then
+        log "Error: ${message}"
+        exit "${exit_code}"
+    fi
+}
+
+# Sets the instance state for the auto scaling group
+set_healthy () {
+    local status="${1}"
+
+    if [[ "${status}" == "true" ]]; then
+        log "Setting instance (${instance_id}) as \"Healthy\""
+        aws --region "${region}" autoscaling set-instance-health --instance-id "${instance_id}" --health-status Healthy
+        exit_handler "${?}" "Issue using AWS cli to set instance state \"Healthy\" (${FUNCNAME[0]}:${LINENO})"
+        exit 0
+    elif [[ "${status}" == "false" ]]; then
+        log "Setting instance (${instance_id}) as \"Unhealthy\""
+        aws --region "${region}" autoscaling set-instance-health --instance-id "${instance_id}" --health-status Unhealthy
+        exit_handler "${?}" "Issue using AWS cli to set instance state \"Unhealthy\" (${FUNCNAME[0]}:${LINENO})" 
+        exit 0
+    else
+        exit_handler "1" "Unknown status ${status} (${FUNCNAME[0]}:${LINENO})"
+    fi
+}
+
+# Check instance is in autoscaling group
+in_auto_scaling_group () {
+    local auto_scaling_group_instance_info
+
+    log "Checking instance (${instance_id}) is in an Auto Scaling Group"
+    auto_scaling_group_instance_info=$(aws --output "text" --query "AutoScalingInstances[0].InstanceId" --region "${region}" autoscaling describe-auto-scaling-instances --instance-ids "${instance_id}")
+    exit_handler "${?}" "Failed to get instance details from auto scaling group using AWS cli (${FUNCNAME[0]}:${LINENO})"
+
+    if [[ "${auto_scaling_group_instance_info}" == "${instance_id}" ]]; then
+        log "Instance (${instance_id}) is in an Auto Scaling Group"
+        return 0
+    else
+        log "Instance (${instance_id}) is not in an Auto Scaling Group"
+        return 1
+    fi
+}
+
+# Quit before X uptime (must wait for the health check grace period)
+wait_uptime () {
+    local time="${1}"
+
+    log "Checking system has been up for ${time} seconds"
+    if [[ "$(cut -d '.' -f 1 < /proc/uptime)" < "${time}" ]]; then
+        log "Waiting for instance to be up for longer than ${time} seconds before running"
+        exit 0
+    fi
+}
+
+# Check Sonarqube properties file for database connection
+sonarqube_properties_database_check () {
+    local properties_file="${1}"
+
+    log "Checking for Postgresql connection in ${properties_file}"
+    if grep -Fq "#sonar.jdbc.url=jdbc:postgresql" "${properties_file}" 2>&1; then
+        log "Postgresql database has not been configured in ${properties_file}"
+        set_healthy "false"
+    fi
+}
+
+# Check the sonar service status
+sonarqube_service_check () {
+    local service_name="${1}"
+
+    log "Checking ${service_name} is active in systemctl"
+    if ! systemctl is-active --quiet "${service_name}"; then
+        log "The Sonarqube service is not active"
+        set_healthy "false"
+    fi
+}
+
+# Query the Sonarqube webservice
+sonarqube_webservice_check () {
+    local local_web_address="${1}"
+
+    if curl -s "${local_web_address}" | grep -Fq "window.serverStatus = 'UP'" 2>&1; then
+        log "The Sonarqube web front end is up"
+        set_healthy "true"
+    else
+        log "Failed to check the Sonarqube frontend"
+        set_healthy "false"
+    fi
+}
+
+main () {
+    log "Starting Sonarqube health check"
+
+    log "Retrieving instance metadata from: ${instance_metadata_url}"
+    metadata=$(curl -s ${instance_metadata_url}/latest/dynamic/instance-identity/document)
+    exit_handler "${?}" "Failed to get instance metadata (${FUNCNAME[0]}:${LINENO})"
+
+    region=$(echo "${metadata}" | jq -e -r ".region")
+    exit_handler "${?}" "Issue getting region from metadata (${FUNCNAME[0]}:${LINENO})"
+    log "Using region: ${region}"
+
+    instance_id=$(echo "${metadata}" | jq -e -r ".instanceId")
+    exit_handler "${?}" "Issue getting instanceId from metadata (${FUNCNAME[0]}:${LINENO})"
+    log "Using instanceId: ${instance_id}"
+
+    if in_auto_scaling_group; then
+        wait_uptime 300
+        sonarqube_properties_database_check "{{ sonarqube_base_dir }}/conf/sonar.properties"
+        sonarqube_service_check "{{ sonarqube_service_name }}"
+        sonarqube_webservice_check "127.0.0.1:{{ sonarqube_web_port }}"
+    fi
+}
+
+main "${@}"

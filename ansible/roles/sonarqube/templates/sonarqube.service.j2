@@ -1,0 +1,21 @@
+[Unit]
+Description=SonarQube {{ sonarqube_version }} service
+Requires=network.target
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+ExecStart={{ sonarqube_daemon_dir }}/sonar.sh start
+ExecStop={{ sonarqube_daemon_dir }}/sonar.sh stop
+ExecReload={{ sonarqube_daemon_dir }}/sonar.sh restart
+Restart=on-failure
+RestartSec=10
+PIDFile={{ sonarqube_daemon_dir }}/SonarQube.pid
+User={{ sonarqube_user }}
+Group={{ sonarqube_group }}
+LimitNOFILE={{ sonarqube_limitnofile }}
+LimitNPROC={{ sonarqube_limitnproc }}
+
+[Install]
+WantedBy=multi-user.target

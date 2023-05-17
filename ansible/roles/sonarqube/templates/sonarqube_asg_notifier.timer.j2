@@ -1,0 +1,10 @@
+[Unit]
+Description=timer to launch the Sonarqube ({{ sonarqube_version }}) health check
+
+[Timer]
+OnBootSec={{ healthcheck_boot_wait }}
+OnUnitActiveSec={{ healthcheck_check_interval }}s
+AccuracySec=1us
+
+[Install]
+WantedBy=timers.target

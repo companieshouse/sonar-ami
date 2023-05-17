@@ -8,7 +8,6 @@
 
 # Fail if it is not installed or configured
 - name: Fail if JAVA is not found
-  fail:
+  ansible.builtin.fail:
     msg: "JAVA is not installed or configured correctly"
   when: not prereq_java.rc == 0
-  
